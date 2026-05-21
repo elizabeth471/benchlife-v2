@@ -8955,6 +8955,7 @@ const _DEV_PERF = (() => {
 
 // Apply filter scale on load
 window.addEventListener('DOMContentLoaded', () => {
+  initLandingCta();
   if (_DEV_PERF.lowPower) {
     const dm = document.querySelector('#wc feDisplacementMap');
     if (dm) dm.setAttribute('scale', _DEV_PERF.filterScale);

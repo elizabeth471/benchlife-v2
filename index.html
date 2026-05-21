@@ -5867,6 +5867,14 @@ function renderGame(g) {
         <div class="prompt-sub">${viewer === 'self' ? 'Say it. In the chat.' : other + ' is saying something.'}</div>
       </div>`;
     }
+    if (p.type === 'v2') {
+      const label = p.promptType === 'dare' ? 'Dare' : 'Truth';
+      return `<div class="prompt-card" role="region" aria-label="Current prompt">
+        <div class="prompt-type">${label}</div>
+        <div class="prompt-text">${p.prompt}</div>
+        <div class="prompt-sub">${viewer === 'self' ? 'Answer in the chat. Take your time.' : `${_pro(g.currentTurn,'Sub')} is thinking.`}</div>
+      </div>`;
+    }
     return '';
   };
 
@@ -5909,6 +5917,20 @@ function renderGame(g) {
           <button class="act-main" onclick="markDone()">We did it</button>
           <button class="act-alt" onclick="skipRound()">Skip</button>
         </div>`;
+    } else if (p.type === 'v2') {
+      if (p.promptType === 'dare' && p.done) {
+        actions = `
+          <div class="action-row">
+            <button class="act-main" onclick="markDone()">${p.done}</button>
+            <button class="act-alt" onclick="skipRound()">Skip</button>
+          </div>`;
+      } else {
+        actions = `
+          <div class="action-row">
+            <button class="act-main" onclick="markDone()">I answered</button>
+            <button class="act-alt" onclick="skipRound()">Skip</button>
+          </div>`;
+      }
     } else if (p.type === 'story') {
       if (p.state === 'complete') {
         actions = `
@@ -5948,6 +5970,14 @@ function pickFresh(pool, served) {
 }
 
 function chooseTruth(depth) {
+  const v2 = getV2Prompt(S.benchType, S.discoveryAnswers);
+  if (v2) {
+    db.ref(`rooms/${S.room}/game`).update({
+      currentPrompt: { type:'v2', promptType:v2.type, prompt:v2.prompt, done:v2.done, id:'v2-'+Date.now() }
+    });
+    markV2PromptSeen(v2);
+    return;
+  }
   db.ref(`rooms/${S.room}/game`).once('value', snap => {
     const g = snap.val();
     const t = S.theme || 'any';
@@ -5973,6 +6003,14 @@ function chooseTruth(depth) {
 }
 
 function chooseDare(depth) {
+  const v2 = getV2Prompt(S.benchType, S.discoveryAnswers);
+  if (v2) {
+    db.ref(`rooms/${S.room}/game`).update({
+      currentPrompt: { type:'v2', promptType:v2.type, prompt:v2.prompt, done:v2.done, id:'v2-'+Date.now() }
+    });
+    markV2PromptSeen(v2);
+    return;
+  }
   db.ref(`rooms/${S.room}/game`).once('value', snap => {
     const g = snap.val();
     const t = S.theme || 'any';
@@ -6033,6 +6071,14 @@ function chooseAdore() {
 }
 
 function chooseGoofy(depth) {
+  const v2 = getV2Prompt(S.benchType, S.discoveryAnswers);
+  if (v2) {
+    db.ref(`rooms/${S.room}/game`).update({
+      currentPrompt: { type:'v2', promptType:v2.type, prompt:v2.prompt, done:v2.done, id:'v2-'+Date.now() }
+    });
+    markV2PromptSeen(v2);
+    return;
+  }
   db.ref(`rooms/${S.room}/game`).once('value', snap => {
     const g = snap.val();
     const t = S.theme || 'any';
@@ -6052,6 +6098,56 @@ function chooseGoofy(depth) {
       currentPrompt: { type:'goofy', id:pick.id, prompt:pick.prompt }
     });
   });
+}
+
+// ── V2 PROMPT SYSTEM ─────────────────────────────────────
+function getV2Prompt(benchType, discoveryAnswers) {
+  const typePrompts = BENCH_PROMPTS[benchType];
+  if (!typePrompts) return null;
+  const weights = buildV2Weights(benchType, discoveryAnswers);
+  let pool = [];
+  Object.keys(typePrompts).forEach(cat => {
+    const w = weights[cat] || 1;
+    if (w <= 0) return;
+    for (let i = 0; i < w; i++) pool = pool.concat(typePrompts[cat]);
+  });
+  const seen = (S.memory && S.memory.seenV2Prompts) || [];
+  const available = pool.filter(p => !seen.includes(p.prompt));
+  const final = available.length > 0 ? available : pool;
+  return final[Math.floor(Math.random() * final.length)] || null;
+}
+
+function buildV2Weights(type, ans) {
+  const w = {};
+  if (type === 'lovers') {
+    w.vulnerability = 1; w.desire = 1; w.presence = 1; w.touch = 1;
+    w.novelty = 1; w.affirmation = 1; w.mutual = 1;
+    w.laughter = 3; w.banter = 2; w.goofiness = 2;
+    w.surprises = 1; w.heartThenLaugh = 1;
+    if (ans) {
+      if (ans['l01'] === 0) w.touch = (w.touch || 1) + 2;
+      if (ans['l01'] === 1) w.affirmation = (w.affirmation || 1) + 2;
+      if (ans['l04'] === 3) { w.vulnerability = 0; w.laughter += 2; }
+      if (ans['l07'] === 0) w.presence = (w.presence || 1) + 2;
+      if (ans['l07'] === 1) w.laughter += 2;
+      if (ans['l07'] === 2) w.touch = (w.touch || 1) + 2;
+      if (ans['l10'] === 1) w.touch = (w.touch || 1) + 2;
+      if (ans['l10'] === 2) { w.laughter += 2; w.goofiness += 1; }
+    }
+  } else if (type === 'friends') {
+    w.connection = 1; w.support = 1; w.laughter = 3;
+    w.memories = 2; w.honesty = 1; w.future = 1; w.appreciation = 2;
+  } else if (type === 'sillies') {
+    w.chaos = 3; w.roasting = 3; w.memes = 2;
+    w.absurd = 3; w.hotTakes = 2; w.laughs = 3; w.randomChaos = 2;
+  }
+  return w;
+}
+
+function markV2PromptSeen(prompt) {
+  if (!S.memory) S.memory = {};
+  if (!S.memory.seenV2Prompts) S.memory.seenV2Prompts = [];
+  if (prompt && prompt.prompt) S.memory.seenV2Prompts.push(prompt.prompt);
 }
 
 async function submitStoryOpening() {

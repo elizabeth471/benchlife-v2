@@ -664,6 +664,7 @@
     .btn-skip:hover { opacity:1; }
     .btn-keep-waiting { background:none; border:1px solid var(--border); color:var(--muted); font-family:'Tenor Sans',sans-serif; font-size:12px; letter-spacing:.06em; padding:8px 16px; border-radius:100px; cursor:pointer; transition:all .2s; }
     .btn-keep-waiting:hover { color:var(--ink); border-color:var(--rose); }
+    .bench-safe-note { font-family:'Spectral',serif; font-size:11px; color:var(--muted); font-style:italic; text-align:center; opacity:.6; padding:4px 0; }
 
     .choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .waiting { text-align:center; padding:28px 20px; }
@@ -4874,6 +4875,7 @@
       <div class="game-panel" id="gamePanel">
         <div style="text-align:center; color:var(--muted); font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; padding:32px;">getting comfy…</div>
       </div>
+      <p class="bench-safe-note">No pressure. Skip anything that feels uncomfortable.</p>
 
 
 
@@ -5768,6 +5770,7 @@ function enterRoom(code) {
 
       // ── SHOW SESSION ─────────────────────────────────────
       go('session');
+      updateAmbRoom();
       safe(_showDevTrigger);
 
       // Post-navigation setup
@@ -9066,6 +9069,13 @@ function _initAmbientMode() {
 function _updateAmbientHud(room) {
   const rm = document.getElementById('ambRoom');
   if (rm && room) rm.textContent = room.toLowerCase();
+}
+
+function updateAmbRoom() {
+  const el = document.getElementById('ambRoom');
+  if (!el) return;
+  const type = BENCH_TYPES[S.benchType] || BENCH_TYPES.lovers;
+  el.textContent = type.emoji + ' ' + S.room;
 }
 
 // ── VISIBILITY — pause heavy spawners when tab is hidden ─

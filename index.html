@@ -2690,6 +2690,21 @@
 @keyframes th-sfx-ff-pulse{0%,100%{opacity:0}20%,80%{opacity:.92}50%{opacity:.80}}
 @keyframes th-mouse-appear{0%{opacity:0}100%{opacity:1}}
 
+/* ═══ DISCOVERY SCREEN ═════════════════════════════════════ */
+.dsc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;gap:32px;max-width:480px;margin:0 auto;width:100%;}
+.dsc-progress{width:100%;display:flex;flex-direction:column;gap:10px;}
+.dsc-counter{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.dsc-bar{width:100%;height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.dsc-fill{height:100%;background:var(--rose);border-radius:2px;transition:width .4s ease;}
+.dsc-qwrap{width:100%;}
+.dsc-question{font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;font-size:28px;line-height:1.3;color:var(--ink);text-align:center;}
+.dsc-options{width:100%;display:flex;flex-direction:column;gap:10px;}
+.dsc-opt{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-family:'Spectral',serif;font-size:15px;color:var(--ink);text-align:left;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;}
+.dsc-opt:hover{border-color:var(--rose-lt);background:var(--card2);}
+.dsc-opt.selected{border-color:var(--rose);background:rgba(200,136,152,.10);transform:scale(.99);}
+.dsc-skip{background:none;border:none;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--muted);cursor:pointer;padding:6px;opacity:.6;text-decoration:underline;text-underline-offset:3px;transition:opacity .2s;}
+.dsc-skip:hover{opacity:1;}
+
 /* ═══ BENCH TYPE SCREEN ════════════════════════════════════ */
 .btc-bench-wrap{width:100%;max-width:520px;margin:0 auto;border-radius:0 0 16px 16px;overflow:hidden;flex-shrink:0;}
 .btc-bench-wrap svg{display:block;width:100%;height:auto;}
@@ -3286,6 +3301,21 @@
         <button onclick="btcJoin()" class="btc-join-btn">Join</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- DISCOVERY QUESTIONS -->
+<div id="discoveryScreen" class="screen" role="main" tabindex="-1">
+  <div class="dsc-wrap">
+    <div class="dsc-progress">
+      <span class="dsc-counter" id="dscCounter">1 of 10</span>
+      <div class="dsc-bar"><div class="dsc-fill" id="dscFill"></div></div>
+    </div>
+    <div class="dsc-qwrap">
+      <h2 class="dsc-question" id="dscQuestion"></h2>
+    </div>
+    <div class="dsc-options" id="dscOptions"></div>
+    <button class="dsc-skip" onclick="dscSkip()">Skip for now</button>
   </div>
 </div>
 
@@ -9782,6 +9812,51 @@ function joinFromLanding() {
   openLogin(code);
 }
 
+// ── DISCOVERY QUESTIONS ──────────────────────────────────
+let _dsc = { answers:{}, index:0, questions:[], type:'lovers' };
+
+function startDiscovery(type) {
+  _dsc = { answers:{}, index:0, questions: DISCOVERY_QUESTIONS[type] || [], type };
+  go('discoveryScreen');
+  dscRender();
+}
+
+function dscRender() {
+  const q = _dsc.questions[_dsc.index];
+  if (!q) { dscFinish(); return; }
+  const pct = ((_dsc.index + 1) / _dsc.questions.length) * 100;
+  document.getElementById('dscCounter').textContent = (_dsc.index + 1) + ' of ' + _dsc.questions.length;
+  document.getElementById('dscFill').style.width = pct + '%';
+  document.getElementById('dscQuestion').textContent = q.q;
+  const opts = document.getElementById('dscOptions');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'dsc-opt';
+    btn.textContent = opt;
+    btn.onclick = () => dscAnswer(q.id, i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function dscAnswer(qid, idx, btn) {
+  document.querySelectorAll('.dsc-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  _dsc.answers[qid] = idx;
+  setTimeout(() => { _dsc.index++; dscRender(); }, 350);
+}
+
+function dscSkip() {
+  _dsc.questions.forEach(q => { _dsc.answers[q.id] = q.opts.length - 1; });
+  dscFinish();
+}
+
+function dscFinish() {
+  S.discoveryAnswers = _dsc.answers;
+  S.benchType = _dsc.type;
+  go('setupScreen');
+}
+
 // ── BENCH TYPE SELECTOR ──────────────────────────────────
 function btcInit() {
   // Clone landing bench illustration into bench type screen
@@ -13150,7 +13225,7 @@ function tplResetAll(){document.querySelectorAll('[data-tpl^="horizon-"]').forEa
 function tplRestoreToggles(){const saved=localStorage.getItem('benchlife_hz');if(saved)tpIlog(saved);}
 
 // LOCATION SYSTEM
-let _activeLoc=null;
+// _activeLoc declared above (line ~13142) — no redeclaration
 function enterLocation(key){document.querySelectorAll('[data-location]').forEach(el=>{el.style.display='none';el.style.visibility='hidden';el.style.opacity='0';});_activeLoc=key||null;if(!key)return;const layer=document.getElementById('loc-'+key);if(layer){layer.style.display='';layer.style.visibility='visible';layer.style.opacity='1';}if(key==='cherry_blossom_lane')_cblInit();if(key==='lotus_pond')_lpInit();try{if(S&&S.room)db.ref('rooms/'+S.room+'/location').set(key);}catch(e){}}
 function exitLocation(){enterLocation(null);}
 function dpActivateLocation(key,tabKey){enterLocation(key);document.querySelectorAll('[id^="loc-act-"]').forEach(b=>b.classList.remove('on'));const btn=document.getElementById('loc-act-'+tabKey);if(btn)btn.classList.add('on');}
@@ -13159,8 +13234,7 @@ function dpLocTab(tab){['cb','lp','th'].forEach(t=>{const panel=document.getElem
 function locToggleEl(id,btn){const el=document.getElementById(id);if(!el)return;const isOn=btn.classList.contains('on');el.style.display=isOn?'none':'';btn.classList.toggle('on',!isOn);btn.textContent=isOn?'○':'●';}
 
 // CHERRY BLOSSOM LANE
-const _cblTOD={day:{sky:'url(#cb-sky-day)',sun:true,moon:false,stars:false,clouds:true,mist:false,ff:false,lg:0,sunX:280,sunY:38,sunR:11},dawn:{sky:'url(#cb-sky-dawn)',sun:true,moon:false,stars:false,clouds:true,mist:true,ff:false,lg:.55,sunX:48,sunY:102,sunR:9},dusk:{sky:'url(#cb-sky-dusk)',sun:true,moon:false,stars:false,clouds:false,mist:false,ff:false,lg:.75,sunX:348,sunY:105,sunR:13},night:{sky:'url(#cb-sky-night)',sun:false,moon:true,stars:true,clouds:false,mist:false,ff:true,lg:.90,sunX:280,sunY:38,sunR:11}};
-let _cblRippleTimer=null,_cblMatureRunning=false,_cblSillyRunning=false,_cblCraneBusy=false,_cblKoiBusy=false,_cblBfBusy={a:false,b:false};
+// _cblTOD and _cblRippleTimer etc. already declared above — no redeclaration
 function _cblInit(){_cblSetTod('day');_cblStartRippleLoop();_cblStartPetals();_cblAttachClicks();}
 function _cblSetTod(tod){const c=_cblTOD[tod];if(!c)return;const $=id=>document.getElementById(id);const sky=$('cb-sky');if(sky)sky.setAttribute('fill',c.sky);[['cb-sun',c.sun],['cb-moon',c.moon],['cb-stars',c.stars],['cb-clouds',c.clouds],['cb-mist',c.mist],['cb-fireflies',c.ff]].forEach(([id,show])=>{const el=$(id);if(el)el.style.display=show?'':'none';});if(c.sun){const o=$('cb-sun-orb'),h=$('cb-sun-haze');if(o){o.setAttribute('cx',c.sunX);o.setAttribute('cy',c.sunY);o.setAttribute('r',c.sunR);}if(h){h.setAttribute('cx',c.sunX);h.setAttribute('cy',c.sunY);}}const lgi=$('cb-lg-i'),lgo=$('cb-lg-o');if(lgi)lgi.setAttribute('fill','rgba(252,215,128,'+(c.lg*.85)+')');if(lgo)lgo.setAttribute('fill','rgba(245,195,95,'+(c.lg*.40)+')');;}
 function _cblStartRippleLoop(){if(_cblRippleTimer)clearInterval(_cblRippleTimer);_cblRippleTimer=setInterval(()=>{if(_activeLoc!=='cherry_blossom_lane')return;const l=document.getElementById('cb-ripples');if(!l)return;const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',210+Math.random()*60);c.setAttribute('cy',153+Math.random()*9);c.setAttribute('r','3');c.setAttribute('fill','none');c.setAttribute('stroke','rgba(188,218,232,'+(0.30+Math.random()*0.18)+')');c.setAttribute('stroke-width','1');c.style.animation='cbripple 3.5s ease-out forwards';c.addEventListener('animationend',()=>c.remove());l.appendChild(c);},8000);}

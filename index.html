@@ -415,6 +415,13 @@
       width: auto;
       padding: 11px 18px;
     }
+    .landing-type-cards { display:flex; flex-direction:column; gap:8px; width:100%; max-width:280px; margin:0 auto; }
+    .landing-type-card { display:flex; align-items:center; gap:12px; padding:13px 16px; background:var(--card); border:1px solid var(--border); border-radius:14px; cursor:pointer; transition:all .2s; text-align:left; width:100%; }
+    .landing-type-card:hover { border-color:var(--rose); background:var(--rose-lt); transform:translateY(-1px); }
+    .landing-type-card-emoji { font-size:22px; line-height:1; }
+    .landing-type-card-info { flex:1; display:flex; flex-direction:column; gap:2px; }
+    .landing-type-card-name { font-family:'Tenor Sans',sans-serif; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); }
+    .landing-type-card-tagline { font-family:'Spectral',serif; font-style:italic; font-size:12px; color:var(--muted); text-align:right; }
 
     .tagline { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px; color:rgba(122,88,64,.35); margin-top:24px; }
 
@@ -3210,7 +3217,8 @@
     <p class="hero-em" id="heroEm">"side by side, not face to face."</p>
     <p class="hero-sub" id="heroSub">a small game for two.</p>
     <div class="landing-btn-row" id="landingBtnRow">
-      <button class="btn btn-fill" id="landingPrimaryBtn" onclick="onLandingPrimary()">Take a seat</button>
+      <div id="landingTypeCards" class="landing-type-cards"></div>
+      <button class="btn btn-fill" id="landingPrimaryBtn" onclick="onLandingPrimary()" style="display:none"></button>
       <div class="landing-code-row">
         <input class="field landing-code-input" id="landingCodeInput" placeholder="room code" maxlength="12"
                oninput="this.value=this.value.toUpperCase()"
@@ -5491,7 +5499,7 @@ function go(id) {
   }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'landing') { _createLandingStars(); setTimeout(_initLandingLoverClicks, 300); }
+  if (id === 'landing') { _createLandingStars(); setTimeout(_initLandingLoverClicks, 300); initLandingCta(); }
   if (id === 'benchTypeScreen') btcInit();
 }
 
@@ -9941,22 +9949,23 @@ function _updateLandingFromPresence(presence, code, roomName) {
   if (codeInput) codeInput.value = code;
 
   const codeRow = document.querySelector('.landing-code-row');
+  const typeCards = document.getElementById('landingTypeCards');
   if (waiting.length > 0) {
     const name = waiting[0];
     if (em)  em.textContent  = `${name.toLowerCase()} is on the bench.`;
     if (sub) sub.textContent = `${_pro(name,'sub')} is waiting.`;
     if (btn) {
+      btn.style.display = '';
       btn.textContent = `join ${name} →`;
       btn.onclick = () => { openLogin(code, name === 'Ian' ? 'Eli' : 'Ian'); };
     }
+    if (typeCards) typeCards.style.display = 'none';
     if (codeRow) codeRow.style.display = 'none';
   } else {
-    if (em)  em.textContent  = '"the bench is empty."';
-    if (sub) sub.textContent = 'take your seat.';
-    if (btn) {
-      btn.textContent = 'Find a bench →';
-      btn.onclick = () => { onLandingPrimary(); };
-    }
+    if (em)  em.textContent  = '"side by side, not face to face."';
+    if (sub) sub.textContent = 'a small game for two.';
+    if (btn) btn.style.display = 'none';
+    if (typeCards) typeCards.style.display = '';
     if (codeRow) codeRow.style.display = '';
   }
 }
@@ -9973,6 +9982,24 @@ function joinFromLanding() {
   const code = (inp ? inp.value.trim().toUpperCase() : '');
   if (!code) return;
   openLogin(code);
+}
+
+function initLandingCta() {
+  const container = document.getElementById('landingTypeCards');
+  if (!container || container.children.length > 0) return;
+  if (typeof BENCH_TYPES === 'undefined') return;
+  Object.values(BENCH_TYPES).forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'landing-type-card';
+    btn.setAttribute('aria-label', t.name + ' bench');
+    btn.innerHTML = `<span class="landing-type-card-emoji">${t.emoji}</span>
+      <span class="landing-type-card-info">
+        <span class="landing-type-card-name">${t.name}</span>
+        <span class="landing-type-card-tagline">${t.tagline}</span>
+      </span>`;
+    btn.onclick = () => btcSelect(t.id);
+    container.appendChild(btn);
+  });
 }
 
 // ── DISCOVERY QUESTIONS ──────────────────────────────────

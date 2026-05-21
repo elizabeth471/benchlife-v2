@@ -5679,6 +5679,8 @@ function createRoom() {
   const roomData = {
     code,
     theme: S.theme,
+    benchType: S.benchType || 'lovers',
+    discovery: {},
     memory: { facts },
     game: { roundsPlayed:0, currentTurn:S.user, depthLevel:0, history:[] }
   };
@@ -5691,6 +5693,9 @@ function createRoom() {
 
   db.ref(`rooms/${code}`).set(roomData).then(() => {
     S.room = code;
+    if (S.discoveryAnswers && Object.keys(S.discoveryAnswers).length > 0) {
+      db.ref(`rooms/${code}/discovery/${S.user}`).set(S.discoveryAnswers);
+    }
     enterRoom(code);
   });
 }
@@ -5713,8 +5718,12 @@ function enterRoom(code) {
     try {
       const d = snap.val() || {};
 
-      S.memory = d.memory || { facts: [] };
-      S.theme  = d.theme  || 'intimacy';
+      S.memory    = d.memory    || { facts: [] };
+      S.theme     = d.theme     || 'intimacy';
+      S.benchType = d.benchType || 'lovers';
+      if (S.discoveryAnswers && Object.keys(S.discoveryAnswers).length > 0) {
+        db.ref(`rooms/${code}/discovery/${S.user}`).set(S.discoveryAnswers);
+      }
 
       const $id = id => document.getElementById(id);
       const $set = (id, val) => { const el = $id(id); if (el) el.textContent = val; };

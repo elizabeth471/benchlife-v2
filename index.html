@@ -2165,56 +2165,67 @@
 
     /* ── Zone tabs (desktop) ── */
     .dp-zones {
-      display: flex; border-bottom: 1px solid var(--dp-border);
-      background: var(--dp-bg2); flex-shrink: 0;
+      display: flex; gap: 0; border-bottom: 2px solid var(--dp-border);
+      background: var(--dp-bg); flex-shrink: 0; padding: 0;
     }
     .dp-zone {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      padding: 7px 4px 6px; border: none; background: transparent;
-      cursor: pointer; border-bottom: 2px solid transparent;
-      transition: all .15s; gap: 2px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 10px 8px; border: none; background: transparent;
+      cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+      transition: all .2s; gap: 3px; position: relative;
     }
-    .dp-zone:hover { background: rgba(122,88,64,.05); }
-    .dp-zone.on   { border-bottom-color: var(--dp-accent); background: rgba(252,250,244,.9); }
-    .dz-icon { font-size: 14px; line-height: 1; }
+    .dp-zone:hover { background: rgba(85,112,54,.06); }
+    .dp-zone.on { border-bottom-color: var(--dp-accent); background: rgba(85,112,54,.12); }
+    .dz-icon { font-size: 16px; line-height: 1; }
     .dz-lbl  {
-      font-size: 8.5px; letter-spacing: 1.2px; text-transform: uppercase;
+      font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
       color: var(--dp-muted); font-family: 'Tenor Sans', sans-serif;
-      transition: color .15s;
+      transition: color .2s; font-weight: 500;
     }
-    .dp-zone.on .dz-lbl { color: var(--dp-accent); }
+    .dp-zone.on .dz-lbl { color: var(--dp-accent); font-weight: 600; }
 
-    /* ── Sub-tabs (desktop) ── */
-    .dp-subtabs {
-      display: flex; gap: 4px; padding: 6px 10px 4px;
-      border-bottom: 1px solid var(--dp-border);
-      overflow-x: auto; flex-shrink: 0;
-      scrollbar-width: none;
-    }
-    .dp-subtabs::-webkit-scrollbar { display: none; }
-    .dp-subtab {
-      padding: 3px 11px; border-radius: 20px; white-space: nowrap;
-      border: 1px solid var(--dp-border); background: transparent;
-      color: var(--dp-muted); font-size: 10.5px; font-style: italic;
-      cursor: pointer; font-family: 'Spectral', serif; transition: all .15s;
-    }
-    .dp-subtab.on {
-      border-color: var(--dp-accent);
-      background: rgba(85,112,54,.1);
-      color: var(--dp-accent);
-    }
+    /* ── Sub-tabs hidden in new design ── */
+    .dp-subtabs { display: none; }
+    .dp-subtab { display: none; }
 
     /* ── Scrollable body ── */
-    .dp-body { flex: 1; overflow-y: auto; scrollbar-width: thin; }
+    .dp-body { flex: 1; overflow-y: auto; scrollbar-width: thin; padding: 0; }
+    .dp-body::-webkit-scrollbar { width: 6px; }
+    .dp-body::-webkit-scrollbar-track { background: transparent; }
+    .dp-body::-webkit-scrollbar-thumb { background: rgba(122,88,64,.15); border-radius: 3px; }
+    .dp-body::-webkit-scrollbar-thumb:hover { background: rgba(122,88,64,.25); }
 
-    /* ── Section (used differently on desktop vs mobile) ── */
-    .dp-section { border-bottom: 1px solid var(--dp-border); }
+    /* ── Section (card design) ── */
+    .dp-section {
+      border: none; border-top: 1px solid var(--dp-border);
+      margin: 0; padding: 0;
+      display: none;
+    }
+    .dp-section[data-active="true"] { display: block; }
 
-    /* Desktop: sections shown/hidden by zone+sub, no accordion chrome */
-    .dp-acc-hd  { display: none; } /* hidden on desktop */
-    .dp-acc-arr { display: none; }
-    .dp-acc-body { padding: 10px 14px 14px; }
-    .dp-section[data-active="false"] { display: none; }
+    /* ── Accordion headers as section titles ── */
+    .dp-acc-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 12px 14px; border: none; background: transparent;
+      cursor: pointer; font-family: 'Spectral', serif; font-style: italic;
+      font-size: 13px; color: var(--dp-ink); border-bottom: 1px solid var(--dp-border);
+      transition: background .15s; gap: 8px;
+    }
+    .dp-acc-hd:hover { background: rgba(85,112,54,.05); }
+    .dp-acc-arr {
+      display: inline; font-size: 11px; color: var(--dp-muted);
+      transition: transform .2s; flex-shrink: 0; margin-left: auto;
+    }
+    .dp-acc-hd.open .dp-acc-arr { transform: rotate(180deg); }
+    .dp-acc-hd.open { background: rgba(85,112,54,.08); }
+
+    /* ── Accordion body ── */
+    .dp-acc-body {
+      padding: 12px 14px 14px;
+      display: block;
+      border-bottom: 1px solid var(--dp-border);
+    }
+    .dp-section:last-child .dp-acc-body { border-bottom: none; }
 
     /* ── Controls ── */
     .dp-row-label {
@@ -2322,22 +2333,13 @@
     /* ── MOBILE ACCORDION ── */
     @media (max-width:680px) {
       .dev-panel { width: 100vw; }
-      .dp-zones   { display: none; } /* no zone tabs on mobile */
-      .dp-subtabs { display: none; }
+      .dp-zones { flex-wrap: wrap; padding: 8px; gap: 6px; border: none; background: var(--dp-bg2); }
+      .dp-zone { flex: 0 1 calc(33.333% - 4px); padding: 8px 6px; font-size: 11px; }
+      .dz-lbl { font-size: 8px; }
       .dp-acc-body { display: none; padding: 0; } /* closed by default */
-      .dp-acc-body.open { display: block; padding: 10px 14px 14px; }
-      .dp-acc-hd {
-        display: flex; align-items: center; justify-content: space-between;
-        width: 100%; padding: 11px 14px; border: none; background: transparent;
-        cursor: pointer; font-family: 'Spectral', serif; font-style: italic;
-        font-size: 13px; color: var(--dp-ink); border-bottom: 1px solid var(--dp-border);
-        transition: background .15s;
-      }
-      .dp-acc-hd:hover { background: rgba(122,88,64,.04); }
-      .dp-acc-arr { display: inline; font-size: 11px; color: var(--dp-muted); transition: transform .2s; }
-      .dp-acc-hd.open .dp-acc-arr { transform: rotate(180deg); }
-      /* On mobile, all sections visible, filtered by accordion */
-      .dp-section[data-active="false"] { display: block; }
+      .dp-acc-body.open { display: block; padding: 12px 14px 14px; }
+      /* On mobile, sections hidden by default, shown by accordion */
+      .dp-section[data-active="false"] { display: none !important; }
     }
 
     /* ── trigger button ── */
@@ -12036,44 +12038,26 @@ let _dpZone = 'world', _dpSub = 'location';
 
 function dpZone(btn, zone) {
   _dpZone = zone;
-  _dpSub  = DP_ZONES[zone].subs[0];
   document.querySelectorAll('.dp-zone').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
-  dpRenderSubtabs();
   dpShowSection();
-  if (zone === 'world' && _dpSub === 'location') { dpRenderLocPills(); dpRenderItemList(S.location||'park'); }
-  if (zone === 'studio' && _dpSub === 'colors')  _buildPaletteGrid();
-  if (zone === 'studio' && _dpSub === 'versions') dpRenderVersionList();
+  // Trigger re-renders for specific zones
+  if (zone === 'studio' && document.getElementById('dps-colors')) _buildPaletteGrid();
+  if (zone === 'studio' && document.getElementById('dps-versions')) dpRenderVersionList();
 }
 
 function dpRenderSubtabs() {
-  const bar = document.getElementById('dpSubtabs');
-  if (!bar) return;
-  const labels = { 
-    location:'Location', templatelab:'Template Lab', locations:'Locations',
-    weather:'Weather', wildlife:'Wildlife',
-    characters:'Characters',
-    layout:'Layout', colors:'Colors', versions:'Versions', notes:'Notes' };
-  bar.innerHTML = DP_ZONES[_dpZone].subs.map(sub => `
-    <button class="dp-subtab ${sub===_dpSub?'on':''}" onclick="dpSub(this,'${sub}')">${labels[sub]||sub}</button>
-  `).join('');
+  // Sub-tabs hidden in new design — no-op
 }
 
 function dpSub(btn, sub) {
-  _dpSub = sub;
-  document.querySelectorAll('.dp-subtab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  dpShowSection();
-  if (sub==='location')  { dpRenderLocPills(); dpRenderItemList(S.location||'park'); }
-  if (sub==='colors')    _buildPaletteGrid();
-  if (sub==='versions')  dpRenderVersionList();
-  if (sub==='layout')    dpUpdateBreakpointLabel();
+  // Sub-tabs hidden in new design — no-op
 }
 
 function dpShowSection() {
-  // Desktop: show only the active section, hide the rest
+  // Show all sections for the selected zone, hide others
   document.querySelectorAll('.dp-section').forEach(el => {
-    const match = el.dataset.zone===_dpZone && el.dataset.sub===_dpSub;
+    const match = el.dataset.zone === _dpZone;
     el.dataset.active = match ? 'true' : 'false';
   });
 }

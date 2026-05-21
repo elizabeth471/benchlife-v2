@@ -662,6 +662,8 @@
     .act-alt:hover { color:var(--ink); border-color:var(--rose); }
     .btn-skip { background:none; border:none; color:var(--muted); opacity:.65; font-family:'Tenor Sans',sans-serif; font-size:11px; letter-spacing:.08em; text-transform:lowercase; cursor:pointer; padding:6px; margin-top:6px; text-decoration:underline; text-underline-offset:3px; transition:opacity .2s; }
     .btn-skip:hover { opacity:1; }
+    .btn-keep-waiting { background:none; border:1px solid var(--border); color:var(--muted); font-family:'Tenor Sans',sans-serif; font-size:12px; letter-spacing:.06em; padding:8px 16px; border-radius:100px; cursor:pointer; transition:all .2s; }
+    .btn-keep-waiting:hover { color:var(--ink); border-color:var(--rose); }
 
     .choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .waiting { text-align:center; padding:28px 20px; }
@@ -5883,10 +5885,13 @@ function renderGame(g) {
 
   // ── Waiting (their turn) ──
   if (!isMyTurn) {
-    panel.innerHTML = turnHtml + promptHtml(g.currentPrompt, 'other') + soloPanelIfAlone();
+    panel.innerHTML = turnHtml + promptHtml(g.currentPrompt, 'other') + '<div class="waiting-for-them"></div>' + soloPanelIfAlone();
     afterRenderSolo();
+    startWaitTimer();
     return;
   }
+
+  clearWaitTimer();
 
   // ── My turn, prompt in progress ──
   if (g.currentPrompt) {
@@ -6166,6 +6171,31 @@ function skipV2Prompt() {
   } else {
     skipRound();
   }
+}
+
+// ── WAIT TIMER ────────────────────────────────────────────
+let _waitTimer = null;
+
+function startWaitTimer() {
+  clearWaitTimer();
+  _waitTimer = setTimeout(() => {
+    showWaitTimeout();
+  }, 5 * 60 * 1000);
+}
+
+function showWaitTimeout() {
+  const waitEl = document.querySelector('.waiting-for-them') || document.querySelector('[data-wait]');
+  if (!waitEl) return;
+  waitEl.innerHTML = `
+    <p style="font-family:'Spectral',serif;font-style:italic;color:var(--muted);font-size:13px;margin-bottom:12px;">
+      They might be away.
+    </p>
+    <button onclick="clearWaitTimer()" class="btn-keep-waiting">Keep waiting</button>
+  `;
+}
+
+function clearWaitTimer() {
+  if (_waitTimer) { clearTimeout(_waitTimer); _waitTimer = null; }
 }
 
 async function submitStoryOpening() {

@@ -2689,6 +2689,25 @@
 @keyframes th-sfx-float{0%{transform:translate(0,0);opacity:0}10%{opacity:.90}100%{transform:translate(0,-38px);opacity:0}}
 @keyframes th-sfx-ff-pulse{0%,100%{opacity:0}20%,80%{opacity:.92}50%{opacity:.80}}
 @keyframes th-mouse-appear{0%{opacity:0}100%{opacity:1}}
+
+/* ═══ BENCH TYPE SCREEN ════════════════════════════════════ */
+.btc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:28px;}
+.btc-header{text-align:center;}
+.btc-eyebrow{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.btc-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:52px;color:var(--ink);line-height:1;margin-bottom:8px;}
+.btc-sub{font-family:'Spectral',serif;font-style:italic;font-size:16px;color:var(--ink-2);}
+.btc-cards{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;}
+.btc-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;text-align:left;width:100%;}
+.btc-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--shadow);border-color:var(--rose-lt);}
+.btc-card>span:first-child{font-size:26px;flex-shrink:0;}
+.btc-card>span:nth-child(2){font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);flex:1;}
+.btc-card-tag{font-family:'Spectral',serif;font-style:italic;font-size:12px;color:var(--muted);display:block;}
+.btc-join{width:100%;max-width:340px;text-align:center;}
+.btc-join-label{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.btc-join-row{display:flex;gap:8px;}
+.btc-join-row input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:.12em;color:var(--ink);}
+.btc-join-btn{padding:10px 18px;background:var(--rose-btn);color:var(--on-primary);border:none;border-radius:8px;font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:.08em;cursor:pointer;transition:opacity .15s;}
+.btc-join-btn:hover{opacity:.88;}
 </style>
 </head>
 <body>
@@ -3191,7 +3210,7 @@
     <h1>Your benches</h1>
     <p>pick one or start another</p>
   </div>
-  <button class="dash-new" onclick="go('setupScreen')">+ new bench</button>
+  <button class="dash-new" onclick="go('benchTypeScreen')">+ new bench</button>
   <div class="rooms" id="roomsGrid"></div>
 </div>
 
@@ -3242,6 +3261,26 @@
         </div>
         <button class="btn btn-fill" onclick="createRoom()">Let's sit down</button>
         <button class="btn btn-ghost" onclick="go('dashboard'); loadDashboard()">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BENCH TYPE SELECTOR -->
+<div id="benchTypeScreen" class="screen" role="main" tabindex="-1">
+  <div class="btc-wrap">
+    <div class="btc-header">
+      <p class="btc-eyebrow">a bench for two</p>
+      <h1 class="btc-title">Benchlife</h1>
+      <p class="btc-sub">What kind of bench?</p>
+    </div>
+    <div class="btc-cards" id="btcCards"></div>
+    <div class="btc-join">
+      <p class="btc-join-label">Have a code?</p>
+      <div class="btc-join-row">
+        <input type="text" id="btcCodeInput" placeholder="ROOM CODE"
+          maxlength="8" autocapitalize="characters" aria-label="Room code" />
+        <button onclick="btcJoin()" class="btc-join-btn">Join</button>
       </div>
     </div>
   </div>
@@ -4978,7 +5017,7 @@ firebase.initializeApp({
 const db = firebase.database();
 
 // ── STATE ────────────────────────────────────────────────
-const S = { room:null, user:null, theme:null, memory:null, chatRef:null, dashCb:null, gameRef:null, presRef:null };
+const S = { room:null, user:null, theme:null, memory:null, chatRef:null, dashCb:null, gameRef:null, presRef:null, benchType:'lovers', discoveryAnswers:{} };
 
 // ── BIRTHDAY MODE ────────────────────────────────────────
 // To turn off later, set BIRTHDAY_FOR to null.
@@ -5414,6 +5453,7 @@ function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (id === 'landing') { _createLandingStars(); setTimeout(_initLandingLoverClicks, 300); }
+  if (id === 'benchTypeScreen') btcInit();
 }
 
 function pickSetupUser(name) {
@@ -9739,6 +9779,38 @@ function joinFromLanding() {
   openLogin(code);
 }
 
+// ── BENCH TYPE SELECTOR ──────────────────────────────────
+function btcInit() {
+  const c = document.getElementById('btcCards');
+  if (!c) return;
+  c.innerHTML = '';
+  Object.values(BENCH_TYPES).forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'btc-card';
+    btn.setAttribute('aria-label', t.name + ' bench');
+    btn.innerHTML = '<span>' + t.emoji + '</span><span>' + t.name + '</span>'
+      + '<span class="btc-card-tag">' + t.tagline + '</span>';
+    btn.onclick = () => btcSelect(t.id);
+    c.appendChild(btn);
+  });
+}
+
+function btcSelect(typeId) {
+  S.benchType = typeId;
+  startDiscovery(typeId);
+}
+
+function btcJoin() {
+  const code = (document.getElementById('btcCodeInput').value || '').trim().toUpperCase();
+  if (!code) { alert('Enter a room code.'); return; }
+  db.ref('rooms/' + code).once('value', snap => {
+    if (!snap.exists()) { alert('Room not found. Check the code.'); return; }
+    S.benchType = snap.val().benchType || 'lovers';
+    S.room = code;
+    go('loginScreen');
+  });
+}
+
 async function onLandingPrimary() {
   const btn = document.getElementById('landingPrimaryBtn');
   if (btn) btn.textContent = '...';
@@ -9748,7 +9820,7 @@ async function onLandingPrimary() {
     const codes = Object.keys(rooms);
     if (btn) btn.textContent = 'Take a seat';
     if (codes.length === 0) {
-      go('setupScreen');
+      go('benchTypeScreen');
     } else if (codes.length === 1) {
       openLogin(codes[0]);
     } else {

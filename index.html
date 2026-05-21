@@ -2691,7 +2691,9 @@
 @keyframes th-mouse-appear{0%{opacity:0}100%{opacity:1}}
 
 /* ═══ BENCH TYPE SCREEN ════════════════════════════════════ */
-.btc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:28px;}
+.btc-bench-wrap{width:100%;max-width:520px;margin:0 auto;border-radius:0 0 16px 16px;overflow:hidden;flex-shrink:0;}
+.btc-bench-wrap svg{display:block;width:100%;height:auto;}
+.btc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 24px 32px;gap:24px;}
 .btc-header{text-align:center;}
 .btc-eyebrow{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 .btc-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:52px;color:var(--ink);line-height:1;margin-bottom:8px;}
@@ -3268,6 +3270,7 @@
 
 <!-- BENCH TYPE SELECTOR -->
 <div id="benchTypeScreen" class="screen" role="main" tabindex="-1">
+  <div class="btc-bench-wrap" id="btcBenchWrap"></div>
   <div class="btc-wrap">
     <div class="btc-header">
       <p class="btc-eyebrow">a bench for two</p>
@@ -9781,6 +9784,12 @@ function joinFromLanding() {
 
 // ── BENCH TYPE SELECTOR ──────────────────────────────────
 function btcInit() {
+  // Clone landing bench illustration into bench type screen
+  const wrap = document.getElementById('btcBenchWrap');
+  if (wrap && wrap.children.length === 0) {
+    const src = document.querySelector('#landing .landing-bench-wrap');
+    if (src) wrap.appendChild(src.cloneNode(true));
+  }
   const c = document.getElementById('btcCards');
   if (!c) return;
   c.innerHTML = '';

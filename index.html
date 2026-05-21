@@ -660,6 +660,8 @@
       transition: all .2s;
     }
     .act-alt:hover { color:var(--ink); border-color:var(--rose); }
+    .btn-skip { background:none; border:none; color:var(--muted); opacity:.65; font-family:'Tenor Sans',sans-serif; font-size:11px; letter-spacing:.08em; text-transform:lowercase; cursor:pointer; padding:6px; margin-top:6px; text-decoration:underline; text-underline-offset:3px; transition:opacity .2s; }
+    .btn-skip:hover { opacity:1; }
 
     .choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .waiting { text-align:center; padding:28px 20px; }
@@ -5873,6 +5875,7 @@ function renderGame(g) {
         <div class="prompt-type">${label}</div>
         <div class="prompt-text">${p.prompt}</div>
         <div class="prompt-sub">${viewer === 'self' ? 'Answer in the chat. Take your time.' : `${_pro(g.currentTurn,'Sub')} is thinking.`}</div>
+        ${viewer === 'self' ? '<button class="btn-skip" onclick="skipV2Prompt()" aria-label="Skip this prompt">skip this one</button>' : ''}
       </div>`;
     }
     return '';
@@ -6148,6 +6151,21 @@ function markV2PromptSeen(prompt) {
   if (!S.memory) S.memory = {};
   if (!S.memory.seenV2Prompts) S.memory.seenV2Prompts = [];
   if (prompt && prompt.prompt) S.memory.seenV2Prompts.push(prompt.prompt);
+}
+
+let _v2SkipCount = 0;
+
+function skipV2Prompt() {
+  _v2SkipCount++;
+  const v2 = getV2Prompt(S.benchType, S.discoveryAnswers);
+  if (v2) {
+    db.ref(`rooms/${S.room}/game`).update({
+      currentPrompt: { type:'v2', promptType:v2.type, prompt:v2.prompt, done:v2.done, id:'v2-'+Date.now() }
+    });
+    markV2PromptSeen(v2);
+  } else {
+    skipRound();
+  }
 }
 
 async function submitStoryOpening() {

@@ -5501,6 +5501,7 @@ function go(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'landing') { _createLandingStars(); setTimeout(_initLandingLoverClicks, 300); initLandingCta(); }
   if (id === 'benchTypeScreen') btcInit();
+  if (id === 'setupScreen') buildWheel();
 }
 
 function pickSetupUser(name) {
@@ -12808,166 +12809,6 @@ let _wxCycleI = 0;
         <button class="dp-action-btn dp-rose" style="margin-top:8px" onclick="tplResetAll()">✕ Clear horizon</button>
       </div>
     </div>
-    <!-- ══ WORLD › LOCATIONS ══ -->
-    <div class="dp-section" data-zone="world" data-sub="locations" <!-- ══ WORLD › LOCATIONS ══ -->
-    <div class="dp-section" data-zone="world" data-sub="locations" id="dps-locations">
-      <button class="dp-acc-hd" onclick="dpAccToggle(this,'dps-locations')">
-        <span>📍 Draft Locations</span><span class="dp-acc-arr">▾</span>
-      </button>
-      <div class="dp-acc-body">
-
-        <!-- Location sub-tabs -->
-        <div style="display:flex;gap:5px;margin-bottom:10px;border-bottom:1px solid var(--dp-border);padding-bottom:8px">
-          <button class="dp-pill on" id="loc-tab-cb" onclick="dpLocTab('cb')" style="flex:1;text-align:center">🌸 Cherry Blossom</button>
-          <button class="dp-pill"    id="loc-tab-lp" onclick="dpLocTab('lp')" style="flex:1;text-align:center">🪷 Lotus Pond</button>
-          <button class="dp-pill"    id="loc-tab-th" onclick="dpLocTab('th')" style="flex:1;text-align:center">🏡 Treehouse</button>
-        </div>
-
-        <!-- ── Cherry Blossom Lane panel ── -->
-        <div id="loc-panel-cb">
-          <div style="display:flex;gap:5px;margin-bottom:10px">
-            <button class="dp-pill" id="loc-act-cb" onclick="dpActivateLocation('cherry_blossom_lane','cb')" style="flex:1">Enter 🌸</button>
-            <button class="dp-pill" onclick="dpDeactivateLocation()" style="flex:1;opacity:.6">Exit ✕</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Time of day</div>
-          <div class="dp-pill-row" style="margin-bottom:8px">
-            <button class="dp-pill" onclick="_cblSetTod('dawn')">🌅</button>
-            <button class="dp-pill on" onclick="_cblSetTod('day')">☀️</button>
-            <button class="dp-pill" onclick="_cblSetTod('dusk')">🌇</button>
-            <button class="dp-pill" onclick="_cblSetTod('night')">🌙</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Scene elements</div>
-          <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:8px">
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Sky gradient</span><button class="dp-toggle-sw on" id="tgl-cb-sky" onclick="locToggleEl('cb-sky',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Sun</span><button class="dp-toggle-sw on" id="tgl-cb-sun" onclick="locToggleEl('cb-sun',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Moon</span><button class="dp-toggle-sw on" id="tgl-cb-moon" onclick="locToggleEl('cb-moon',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Stars</span><button class="dp-toggle-sw on" id="tgl-cb-stars" onclick="locToggleEl('cb-stars',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Clouds</span><button class="dp-toggle-sw on" id="tgl-cb-clouds" onclick="locToggleEl('cb-clouds',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Pollen haze</span><button class="dp-toggle-sw on" id="tgl-cb-pollen-haze" onclick="locToggleEl('cb-pollen-haze',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Left blossom tree</span><button class="dp-toggle-sw on" id="tgl-cb-tree-l" onclick="locToggleEl('cb-tree-l',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Right blossom tree</span><button class="dp-toggle-sw on" id="tgl-cb-tree-r" onclick="locToggleEl('cb-tree-r',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Stone lantern</span><button class="dp-toggle-sw on" id="tgl-cb-lantern" onclick="locToggleEl('cb-lantern',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Bamboo</span><button class="dp-toggle-sw on" id="tgl-cb-bamboo" onclick="locToggleEl('cb-bamboo',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Koi A</span><button class="dp-toggle-sw on" id="tgl-cb-koi-a" onclick="locToggleEl('cb-koi-a',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Koi B</span><button class="dp-toggle-sw on" id="tgl-cb-koi-b" onclick="locToggleEl('cb-koi-b',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Koi C</span><button class="dp-toggle-sw on" id="tgl-cb-koi-c" onclick="locToggleEl('cb-koi-c',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Butterfly A</span><button class="dp-toggle-sw on" id="tgl-cb-bf-a" onclick="locToggleEl('cb-bf-a',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Butterfly B</span><button class="dp-toggle-sw on" id="tgl-cb-bf-b" onclick="locToggleEl('cb-bf-b',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Crane</span><button class="dp-toggle-sw on" id="tgl-cb-crane" onclick="locToggleEl('cb-crane',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Fireflies</span><button class="dp-toggle-sw on" id="tgl-cb-fireflies" onclick="locToggleEl('cb-fireflies',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Dawn mist</span><button class="dp-toggle-sw on" id="tgl-cb-mist" onclick="locToggleEl('cb-mist',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Falling petals</span><button class="dp-toggle-sw on" id="tgl-cb-petals" onclick="locToggleEl('cb-petals',this)">●</button></div>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Special effects</div>
-          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px">
-            <button class="dp-pill" style="text-align:left;background:rgba(148,208,162,.09);border-color:rgba(148,208,162,.28);color:rgba(148,208,162,.85)" onclick="_cblSfx_childish()">🐾 Childish — Bunny Visit</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(215,185,128,.09);border-color:rgba(215,185,128,.28);color:rgba(215,185,128,.85)" onclick="_cblSfx_silly()">🎭 Silly — Petal Avalanche</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(175,142,215,.09);border-color:rgba(175,142,215,.28);color:rgba(175,142,215,.85)" onclick="_cblSfx_mature()">🌙 Mature — Firefly Heart</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:3px">Art notes</div>
-          <div style="font-size:9px;color:var(--dp-muted);line-height:1.7">
-            Bench: rgba(195,158,65,.95) honey gold<br>
-            Zone: x=118–282 y=118–155<br>
-            Filters: cb-wc · cb-wcl · cb-b1/3/4/6<br>
-            Prefix: cb- · Horizon: cherry_blossom
-          </div>
-        </div>
-
-        <!-- ── Lotus Pond panel ── -->
-        <div id="loc-panel-lp" style="display:none">
-          <div style="display:flex;gap:5px;margin-bottom:10px">
-            <button class="dp-pill" id="loc-act-lp" onclick="dpActivateLocation('lotus_pond','lp')" style="flex:1">Enter 🪷</button>
-            <button class="dp-pill" onclick="dpDeactivateLocation()" style="flex:1;opacity:.6">Exit ✕</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Time of day</div>
-          <div class="dp-pill-row" style="margin-bottom:8px">
-            <button class="dp-pill" onclick="_lpSetTod('dawn')">🌅</button>
-            <button class="dp-pill on" onclick="_lpSetTod('day')">☀️</button>
-            <button class="dp-pill" onclick="_lpSetTod('dusk')">🌇</button>
-            <button class="dp-pill" onclick="_lpSetTod('night')">🌙</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Scene elements</div>
-          <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:8px">
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Sky gradient</span><button class="dp-toggle-sw on" id="tgl-lp-sky" onclick="locToggleEl('lp-sky',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Sun</span><button class="dp-toggle-sw on" id="tgl-lp-sun" onclick="locToggleEl('lp-sun',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Moon</span><button class="dp-toggle-sw on" id="tgl-lp-moon" onclick="locToggleEl('lp-moon',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Stars</span><button class="dp-toggle-sw on" id="tgl-lp-stars" onclick="locToggleEl('lp-stars',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Clouds / cirrus</span><button class="dp-toggle-sw on" id="tgl-lp-clouds" onclick="locToggleEl('lp-clouds',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Mist bands</span><button class="dp-toggle-sw on" id="tgl-lp-mist" onclick="locToggleEl('lp-mist',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Weeping willow</span><button class="dp-toggle-sw on" id="tgl-lp-willow" onclick="locToggleEl('lp-willow',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Pagoda silhouette</span><button class="dp-toggle-sw on" id="tgl-lp-pagoda" onclick="locToggleEl('lp-pagoda',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Bridge posts</span><button class="dp-toggle-sw on" id="tgl-lp-bridge" onclick="locToggleEl('lp-bridge',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Lotus pond water</span><button class="dp-toggle-sw on" id="tgl-lp-pond" onclick="locToggleEl('lp-pond',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Lotus A</span><button class="dp-toggle-sw on" id="tgl-lp-lotus-a" onclick="locToggleEl('lp-lotus-a',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Lotus B</span><button class="dp-toggle-sw on" id="tgl-lp-lotus-b" onclick="locToggleEl('lp-lotus-b',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Lotus C (bud)</span><button class="dp-toggle-sw on" id="tgl-lp-lotus-c" onclick="locToggleEl('lp-lotus-c',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Lotus D</span><button class="dp-toggle-sw on" id="tgl-lp-lotus-d" onclick="locToggleEl('lp-lotus-d',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Fireflies</span><button class="dp-toggle-sw on" id="tgl-lp-fireflies" onclick="locToggleEl('lp-fireflies',this)">●</button></div>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Special effects</div>
-          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px">
-            <button class="dp-pill" style="text-align:left;background:rgba(148,208,162,.09);border-color:rgba(148,208,162,.28);color:rgba(148,208,162,.85)" onclick="if(window._lpSfx_childish)_lpSfx_childish()">🐸 Childish — Frog Parade</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(215,185,128,.09);border-color:rgba(215,185,128,.28);color:rgba(215,185,128,.85)" onclick="if(window._lpSfx_silly)_lpSfx_silly()">🐟 Silly — Koi Leap</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(175,142,215,.09);border-color:rgba(175,142,215,.28);color:rgba(175,142,215,.85)" onclick="if(window._lpSfx_mature)_lpSfx_mature()">🕯 Mature — Midnight Candles</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:3px">Art notes</div>
-          <div style="font-size:9px;color:var(--dp-muted);line-height:1.7">
-            Bench: rgba(175,170,162,.90) granite<br>
-            Zone: x=118–282 y=118–155<br>
-            Filters: lp-wc · lp-wcl · lp-b1/3/6<br>
-            Prefix: lp- · Horizon: lotus_pond
-          </div>
-        </div>
-
-        <!-- ── Treehouse Perch panel ── -->
-        <div id="loc-panel-th" style="display:none">
-          <div style="display:flex;gap:5px;margin-bottom:10px">
-            <button class="dp-pill" id="loc-act-th" onclick="dpActivateLocation('treehouse_perch','th')" style="flex:1">Enter 🏡</button>
-            <button class="dp-pill" onclick="dpDeactivateLocation()" style="flex:1;opacity:.6">Exit ✕</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Time of day</div>
-          <div class="dp-pill-row" style="margin-bottom:8px">
-            <button class="dp-pill" onclick="_thSetTod('dawn')">🌅</button>
-            <button class="dp-pill on" onclick="_thSetTod('day')">☀️</button>
-            <button class="dp-pill" onclick="_thSetTod('dusk')">🌇</button>
-            <button class="dp-pill" onclick="_thSetTod('night')">🌙</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Scene elements</div>
-          <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:8px">
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Sky / window</span><button class="dp-toggle-sw on" id="tgl-th-sky" onclick="locToggleEl('th-sky',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Moon</span><button class="dp-toggle-sw on" id="tgl-th-moon" onclick="locToggleEl('th-moon',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Stars</span><button class="dp-toggle-sw on" id="tgl-th-stars" onclick="locToggleEl('th-stars',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Canopy / clouds</span><button class="dp-toggle-sw on" id="tgl-th-clouds" onclick="locToggleEl('th-clouds',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Dawn mist</span><button class="dp-toggle-sw on" id="tgl-th-mist" onclick="locToggleEl('th-mist',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Amber fireflies</span><button class="dp-toggle-sw on" id="tgl-th-fireflies" onclick="locToggleEl('th-fireflies',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Tawny owl</span><button class="dp-toggle-sw on" id="tgl-th-owl" onclick="locToggleEl('th-owl',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Luna moth</span><button class="dp-toggle-sw on" id="tgl-th-moth" onclick="locToggleEl('th-moth',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Left vine</span><button class="dp-toggle-sw on" id="tgl-th-vine-l" onclick="locToggleEl('th-vine-l',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Right vine</span><button class="dp-toggle-sw on" id="tgl-th-vine-r" onclick="locToggleEl('th-vine-r',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Paper lantern</span><button class="dp-toggle-sw on" id="tgl-th-lantern-group" onclick="locToggleEl('th-lantern-group',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Dappled wall light</span><button class="dp-toggle-sw on" id="tgl-th-dapple" onclick="locToggleEl('th-dapple',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Shimmer sparks</span><button class="dp-toggle-sw on" id="tgl-th-sparks" onclick="locToggleEl('th-sparks',this)">●</button></div>
-            <div class="dp-toggle-row"><span class="dp-toggle-lbl">Dust motes</span><button class="dp-toggle-sw on" id="tgl-th-motes" onclick="locToggleEl('th-motes',this)">●</button></div>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:4px">Special effects</div>
-          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px">
-            <button class="dp-pill" style="text-align:left;background:rgba(148,208,162,.09);border-color:rgba(148,208,162,.28);color:rgba(148,208,162,.85)" onclick="_thSfx_childish()">🐭 Childish — Tiny Visitor</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(215,185,128,.09);border-color:rgba(215,185,128,.28);color:rgba(215,185,128,.85)" onclick="_thSfx_silly()">🏮 Silly — Lantern Spin</button>
-            <button class="dp-pill" style="text-align:left;background:rgba(175,142,215,.09);border-color:rgba(175,142,215,.28);color:rgba(175,142,215,.85)" onclick="_thSfx_mature()">✨ Mature — Lantern Drift</button>
-          </div>
-          <div class="dp-row-label" style="margin-bottom:3px">Art notes</div>
-          <div style="font-size:9px;color:var(--dp-muted);line-height:1.7">
-            Bench: rgba(108,72,38,.92) heartwood<br>
-            Frame: rgba(52,45,38,.88) iron brackets<br>
-            Zone: x=118–282 y=118–155<br>
-            Filters: hz_th_wc · hz_th_wcl · hz_th_b1/3/4/6<br>
-            Prefix: th- · Key: treehouse_perch
-          </div>
-        </div>
-
-      </div>
-    </div>
-    </div>
 
     <!-- ══ WORLD › WEATHER ══ -->
     <div class="dp-section" data-zone="world" data-sub="weather" id="dps-weather">
@@ -13419,9 +13260,10 @@ function tplRestoreToggles(){const saved=localStorage.getItem('benchlife_hz');if
 // _activeLoc declared above (line ~13142) — no redeclaration
 function enterLocation(key){document.querySelectorAll('[data-location]').forEach(el=>{el.style.display='none';el.style.visibility='hidden';el.style.opacity='0';});_activeLoc=key||null;if(!key)return;const layer=document.getElementById('loc-'+key);if(layer){layer.style.display='';layer.style.visibility='visible';layer.style.opacity='1';}if(key==='cherry_blossom_lane')_cblInit();if(key==='lotus_pond')_lpInit();try{if(S&&S.room)db.ref('rooms/'+S.room+'/location').set(key);}catch(e){}}
 function exitLocation(){enterLocation(null);}
-function dpActivateLocation(key,tabKey){enterLocation(key);document.querySelectorAll('[id^="loc-act-"]').forEach(b=>b.classList.remove('on'));const btn=document.getElementById('loc-act-'+tabKey);if(btn)btn.classList.add('on');}
+// LOCATIONS TAB REMOVED — functions below no longer used
+// function dpActivateLocation(key,tabKey){enterLocation(key);document.querySelectorAll('[id^="loc-act-"]').forEach(b=>b.classList.remove('on'));const btn=document.getElementById('loc-act-'+tabKey);if(btn)btn.classList.add('on');}
 function dpDeactivateLocation(){exitLocation();document.querySelectorAll('[id^="loc-act-"]').forEach(b=>b.classList.remove('on'));}
-function dpLocTab(tab){['cb','lp','th'].forEach(t=>{const panel=document.getElementById('loc-panel-'+t);const btn=document.getElementById('loc-tab-'+t);if(panel)panel.style.display=t===tab?'':'none';if(btn)btn.classList[t===tab?'add':'remove']('on');});}
+// function dpLocTab(tab){['cb','lp','th'].forEach(t=>{const panel=document.getElementById('loc-panel-'+t);const btn=document.getElementById('loc-tab-'+t);if(panel)panel.style.display=t===tab?'':'none';if(btn)btn.classList[t===tab?'add':'remove']('on');});}
 function locToggleEl(id,btn){const el=document.getElementById(id);if(!el)return;const isOn=btn.classList.contains('on');el.style.display=isOn?'none':'';btn.classList.toggle('on',!isOn);btn.textContent=isOn?'○':'●';}
 
 // CHERRY BLOSSOM LANE
